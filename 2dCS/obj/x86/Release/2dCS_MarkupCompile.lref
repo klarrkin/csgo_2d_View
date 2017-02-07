@@ -1,7 +1,10 @@
 ﻿C:\development\Quellcode\Testimons\2dCS\2dCS\obj\x86\Release\GeneratedInternalTypeHelper.g.cs
 FC:\development\Quellcode\Testimons\2dCS\2dCS\App.xaml;;
 FC:\development\Quellcode\Testimons\2dCS\2dCS\MainWindow.xaml;;
-FC:\development\Quellcode\Testimons\2dCS\2dCS\MapView.xaml;;
-FC:\development\Quellcode\Testimons\2dCS\2dCS\PlayerStatus.xaml;;
-FC:\development\Quellcode\Testimons\2dCS\2dCS\PlayerStatusIcon.xaml;;
+FC:\development\Quellcode\Testimons\2dCS\2dCS\Views\MapView.xaml;;
+FC:\development\Quellcode\Testimons\2dCS\2dCS\Views\Map\SmokeView.xaml;;
+FC:\development\Quellcode\Testimons\2dCS\2dCS\Views\PlayerStatus.xaml;;
+FC:\development\Quellcode\Testimons\2dCS\2dCS\Views\PlayerStatusIcon.xaml;;
+FC:\development\Quellcode\Testimons\2dCS\2dCS\Views\Map\BombView.xaml;;
+FC:\development\Quellcode\Testimons\2dCS\2dCS\Views\Map\PlayerView.xaml;;
 

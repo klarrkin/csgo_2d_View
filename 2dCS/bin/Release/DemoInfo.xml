@@ -37,21 +37,302 @@
             The return value is undefined if there's no current chunk.
             </remarks>
         </member>
-        <member name="M:DemoInfo.BitStreamUtil.Create(System.IO.Stream)">
+        <member name="F:DemoInfo.DT.SendPropertyFlags.Unsigned">
             <summary>
-            Creates an instance of the preferred <see cref="T:DemoInfo.IBitStream"/> implementation for streams.
+            Unsigned integer data.
             </summary>
         </member>
-        <member name="M:DemoInfo.BitStreamUtil.Create(System.Byte[])">
+        <member name="F:DemoInfo.DT.SendPropertyFlags.Coord">
             <summary>
-            Creates an instance of the preferred <see cref="T:DemoInfo.IBitStream"/> implementation for byte arrays.
+            If this is set, the float/vector is treated like a world coordinate. 
+            Note that the bit count is ignored in this case.
             </summary>
         </member>
-        <member name="M:DemoInfo.DP.Entity.ApplyUpdate(DemoInfo.IBitStream)">
+        <member name="F:DemoInfo.DT.SendPropertyFlags.NoScale">
             <summary>
-            Applies the update.
+            For floating point, don't scale into range, just take value as is
             </summary>
-            <param name="reader">Reader.</param>
+        </member>
+        <member name="F:DemoInfo.DT.SendPropertyFlags.RoundDown">
+            <summary>
+            For floating point, limit high value to range minus one bit unit
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DT.SendPropertyFlags.RoundUp">
+            <summary>
+             For floating point, limit low value to range minus one bit unit
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DT.SendPropertyFlags.Normal">
+            <summary>
+             If this is set, the vector is treated like a normal (only valid for vectors)
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DT.SendPropertyFlags.Exclude">
+            <summary>
+             This is an exclude prop (not excludED, but it points at another prop to be excluded).
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DT.SendPropertyFlags.XYZE">
+            <summary>
+             Use XYZ/Exponent encoding for vectors.
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DT.SendPropertyFlags.InsideArray">
+            <summary>
+             This tells us that the property is inside an array, so it shouldn't be put into the
+             flattened property list. Its array will point at it when it needs to.
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DT.SendPropertyFlags.ProxyAlwaysYes">
+            <summary>
+             Set for datatable props using one of the default datatable proxies like
+             SendProxy_DataTableToDataTable that always send the data to all clients.
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DT.SendPropertyFlags.IsVectorElement">
+            <summary>
+             Set automatically if SPROP_VECTORELEM is used.
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DT.SendPropertyFlags.Collapsible">
+            <summary>
+             Set automatically if it's a datatable with an offset of 0 that doesn't change the pointer
+             (ie: for all automatically-chained base classes).
+             In this case, it can get rid of this SendPropDataTable altogether and spare the
+             trouble of walking the hierarchy more than necessary.
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DT.SendPropertyFlags.CoordMp">
+            <summary>
+             Like SPROP_COORD, but special handling for multiplayer games
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DT.SendPropertyFlags.CoordMpLowPrecision">
+            <summary>
+            Like SPROP_COORD, but special handling for multiplayer games where the fractional component only gets a 3 bits instead of 5
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DT.SendPropertyFlags.CoordMpIntegral">
+            <summary>
+            SPROP_COORD_MP, but coordinates are rounded to integral boundaries
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DT.SendPropertyFlags.CellCoord">
+            <summary>
+            Like SPROP_COORD, but special encoding for cell coordinates that can't be negative, bit count indicate maximum value
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DT.SendPropertyFlags.CellCoordLowPrecision">
+            <summary>
+            Like SPROP_CELL_COORD, but special handling where the fractional component only gets a 3 bits instead of 5
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DT.SendPropertyFlags.CellCoordIntegral">
+            <summary>
+            SPROP_CELL_COORD, but coordinates are rounded to integral boundaries
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DT.SendPropertyFlags.ChangesOften">
+            <summary>
+             this is an often changed field, moved to head of sendtable so it gets a small index
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DT.SendPropertyFlags.VarInt">
+            <summary>
+            use var int encoded (google protobuf style), note you want to include SPROP_UNSIGNED if needed, its more efficient
+            </summary>
+        </member>
+        <member name="T:DemoInfo.DemoHeader">
+            <summary>
+            A Demo header.
+            </summary>
+        </member>
+        <member name="T:DemoInfo.Vector">
+            <summary>
+            And Source-Engine Vector. 
+            </summary>
+        </member>
+        <member name="M:DemoInfo.Vector.Copy">
+            <summary>
+            Copy this instance. So if you want to permanently store the position of a player at a point in time, 
+            COPY it. 
+            </summary>
+        </member>
+        <member name="T:DemoInfo.QAngle">
+            <summary>
+            And Angle in the Source-Engine. Looks pretty much like a vector. 
+            </summary>
+        </member>
+        <member name="T:DemoInfo.Split">
+            <summary>
+            A split. 
+            </summary>
+        </member>
+        <member name="T:DemoInfo.PlayerInfo">
+            <summary>
+            A playerinfo, based on playerinfo_t by Volvo. 
+            </summary>
+        </member>
+        <member name="P:DemoInfo.PlayerInfo.Version">
+            version for future compatibility
+        </member>
+        <member name="T:DemoInfo.BoundingBoxInformation">
+            <summary>
+            This contains information about Collideables (specific edicts), mostly used for bombsites. 
+            </summary>
+        </member>
+        <member name="M:DemoInfo.BoundingBoxInformation.Contains(DemoInfo.Vector)">
+            <summary>
+            Checks wheter a point lies within the BoundingBox. 
+            </summary>
+            <param name="point">The point to check</param>
+        </member>
+        <member name="T:DemoInfo.DemoCommand">
+            <summary>
+            The demo-commands as given by Valve.
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DemoCommand.Signon">
+            <summary>
+            it's a startup message, process as fast as possible
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:DemoInfo.DemoCommand.Packet" -->
+        <member name="F:DemoInfo.DemoCommand.Synctick">
+            <summary>
+            sync client clock to demo tick
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DemoCommand.ConsoleCommand">
+            <summary>
+            Console Command
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DemoCommand.UserCommand">
+            <summary>
+            user input command
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DemoCommand.DataTables">
+            <summary>
+             network data tables
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DemoCommand.Stop">
+            <summary>
+            end of time.
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DemoCommand.CustomData">
+            <summary>
+            a blob of binary data understood by a callback function
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DemoCommand.LastCommand">
+            <summary>
+            Last Command
+            </summary>
+        </member>
+        <member name="F:DemoInfo.DemoCommand.FirstCommand">
+            <summary>
+            First Command
+            </summary>
+        </member>
+        <member name="F:DemoInfo.RoundEndReason.TargetBombed">
+            <summary>
+            Target Successfully Bombed!
+            </summary>
+        </member>
+        <member name="F:DemoInfo.RoundEndReason.VIPEscaped">
+            <summary>
+            The VIP has escaped.
+            </summary>
+        </member>
+        <member name="F:DemoInfo.RoundEndReason.VIPKilled">
+            <summary>
+            VIP has been assassinated
+            </summary>
+        </member>
+        <member name="F:DemoInfo.RoundEndReason.TerroristsEscaped">
+            <summary>
+            The terrorists have escaped
+            </summary>
+        </member>
+        <member name="F:DemoInfo.RoundEndReason.CTStoppedEscape">
+            <summary>
+            The CTs have prevented most of the terrorists from escaping!
+            </summary>
+        </member>
+        <member name="F:DemoInfo.RoundEndReason.TerroristsStopped">
+            <summary>
+            Escaping terrorists have all been neutralized
+            </summary>
+        </member>
+        <member name="F:DemoInfo.RoundEndReason.BombDefused">
+            <summary>
+            The bomb has been defused!
+            </summary>
+        </member>
+        <member name="F:DemoInfo.RoundEndReason.CTWin">
+            <summary>
+            Counter-Terrorists Win!
+            </summary>
+        </member>
+        <member name="F:DemoInfo.RoundEndReason.TerroristWin">
+            <summary>
+            Terrorists Win! 
+            </summary>
+        </member>
+        <member name="F:DemoInfo.RoundEndReason.Draw">
+            <summary>
+            Round Draw!
+            </summary>
+        </member>
+        <member name="F:DemoInfo.RoundEndReason.HostagesRescued">
+            <summary>
+            All Hostages have been rescued
+            </summary>
+        </member>
+        <member name="F:DemoInfo.RoundEndReason.TargetSaved">
+            <summary>
+            Target has been saved! 
+            </summary>
+        </member>
+        <member name="F:DemoInfo.RoundEndReason.HostagesNotRescued">
+            <summary>
+            Hostages have not been rescued!
+            </summary>
+        </member>
+        <member name="F:DemoInfo.RoundEndReason.TerroristsNotEscaped">
+            <summary>
+            Terrorists have not escaped!
+            </summary>
+        </member>
+        <member name="F:DemoInfo.RoundEndReason.VIPNotEscaped">
+            <summary>
+            VIP has not escaped! 
+            </summary>
+        </member>
+        <member name="F:DemoInfo.RoundEndReason.GameStart">
+            <summary>
+            Game Commencing! 
+            </summary>
+        </member>
+        <member name="F:DemoInfo.RoundEndReason.TerroristsSurrender">
+            <summary>
+            Terrorists Surrender
+            </summary>
+        </member>
+        <member name="F:DemoInfo.RoundEndReason.CTSurrender">
+            <summary>
+            CTs Surrender
+            </summary>
+        </member>
+        <member name="T:DemoInfo.DP.FastNetmessages.RankUpdate">
+            <summary>
+            FastNetMessage adaptation of CCSUsrMsg_ServerRankUpdate.RankUpdate protobuf message
+            </summary>
         </member>
         <member name="F:DemoInfo.RoundEndedEventArgs.Winner">
             <summary>
@@ -196,19 +477,21 @@
             Number of rank the player win / lost between the beggining and the end of the match
             </summary>
         </member>
-        <member name="T:DemoInfo.DP.FastNetmessages.UserMessage">
+        <member name="T:DemoInfo.DP.Handler.GameEventHandler">
             <summary>
-            FastNetMessage adaptation of CSVCMsg_UserMessage protobuf message
+            This class manages all GameEvents for a demo-parser. 
             </summary>
         </member>
-        <member name="F:DemoInfo.DP.FastNetmessages.UserMessage.MsgType">
+        <member name="M:DemoInfo.DP.Handler.GameEventHandler.Apply(DemoInfo.GameEvent,DemoInfo.DemoParser)">
             <summary>
-            Correspond to User_Messages enum values
+            Apply the specified rawEvent to the parser.
             </summary>
+            <param name="rawEvent">The raw event.</param>
+            <param name="parser">The parser to mutate.</param>
         </member>
-        <member name="F:DemoInfo.DP.FastNetmessages.UserMessage.PassThrough">
+        <member name="T:DemoInfo.DP.FastNetmessages.SayText2">
             <summary>
-            Don't what is it?
+            FastNetMessage adaptation of CCSUsrMsg_SayText2 protobuf message
             </summary>
         </member>
         <member name="T:DemoInfo.DP.FastNetmessages.ServerRankUpdate">
@@ -216,18 +499,6 @@
             FastNetMessage adaptation of CCSUsrMsg_ServerRankUpdate protobuf message
             We don't raise this event but instead each RankUpdate events that it contains
             </summary>
-        </member>
-        <member name="T:DemoInfo.DP.FastNetmessages.SayText">
-            <summary>
-            FastNetMessage adaptation of CCSUsrMsg_SayText protobuf message
-            </summary>
-        </member>
-        <member name="M:DemoInfo.DP.DemoPacketParser.ParsePacket(DemoInfo.IBitStream,DemoInfo.DemoParser)">
-            <summary>
-            Parses a demo-packet. 
-            </summary>
-            <param name="bitstream">Bitstream.</param>
-            <param name="demo">Demo.</param>
         </member>
         <member name="M:DemoInfo.DP.Handler.PacketEntitesHandler.Apply(DemoInfo.PacketEntities,DemoInfo.IBitStream,DemoInfo.DemoParser)">
             <summary>
@@ -242,6 +513,16 @@
             Reads an update that occures when a new edict enters the PVS (potentially visible system)
             </summary>
             <returns>The new Entity.</returns>
+        </member>
+        <member name="M:DemoInfo.BitStreamUtil.Create(System.IO.Stream)">
+            <summary>
+            Creates an instance of the preferred <see cref="T:DemoInfo.IBitStream"/> implementation for streams.
+            </summary>
+        </member>
+        <member name="M:DemoInfo.BitStreamUtil.Create(System.Byte[])">
+            <summary>
+            Creates an instance of the preferred <see cref="T:DemoInfo.IBitStream"/> implementation for byte arrays.
+            </summary>
         </member>
         <member name="F:DemoInfo.DemoParser.BitStream">
             <summary>
@@ -703,323 +984,42 @@
             </summary>
             <value>The current time.</value>
         </member>
+        <member name="M:DemoInfo.DP.DemoPacketParser.ParsePacket(DemoInfo.IBitStream,DemoInfo.DemoParser)">
+            <summary>
+            Parses a demo-packet. 
+            </summary>
+            <param name="bitstream">Bitstream.</param>
+            <param name="demo">Demo.</param>
+        </member>
         <member name="M:DemoInfo.Player.Copy">
             <summary>
             Copy this instance for multi-threading use. 
             </summary>
         </member>
-        <member name="T:DemoInfo.DP.Handler.GameEventHandler">
+        <member name="T:DemoInfo.DP.FastNetmessages.SayText">
             <summary>
-            This class manages all GameEvents for a demo-parser. 
+            FastNetMessage adaptation of CCSUsrMsg_SayText protobuf message
             </summary>
         </member>
-        <member name="M:DemoInfo.DP.Handler.GameEventHandler.Apply(DemoInfo.GameEvent,DemoInfo.DemoParser)">
+        <member name="M:DemoInfo.DP.Entity.ApplyUpdate(DemoInfo.IBitStream)">
             <summary>
-            Apply the specified rawEvent to the parser.
+            Applies the update.
             </summary>
-            <param name="rawEvent">The raw event.</param>
-            <param name="parser">The parser to mutate.</param>
+            <param name="reader">Reader.</param>
         </member>
-        <member name="T:DemoInfo.DP.FastNetmessages.SayText2">
+        <member name="T:DemoInfo.DP.FastNetmessages.UserMessage">
             <summary>
-            FastNetMessage adaptation of CCSUsrMsg_SayText2 protobuf message
-            </summary>
-        </member>
-        <member name="T:DemoInfo.DemoHeader">
-            <summary>
-            A Demo header.
+            FastNetMessage adaptation of CSVCMsg_UserMessage protobuf message
             </summary>
         </member>
-        <member name="T:DemoInfo.Vector">
+        <member name="F:DemoInfo.DP.FastNetmessages.UserMessage.MsgType">
             <summary>
-            And Source-Engine Vector. 
+            Correspond to User_Messages enum values
             </summary>
         </member>
-        <member name="M:DemoInfo.Vector.Copy">
+        <member name="F:DemoInfo.DP.FastNetmessages.UserMessage.PassThrough">
             <summary>
-            Copy this instance. So if you want to permanently store the position of a player at a point in time, 
-            COPY it. 
-            </summary>
-        </member>
-        <member name="T:DemoInfo.QAngle">
-            <summary>
-            And Angle in the Source-Engine. Looks pretty much like a vector. 
-            </summary>
-        </member>
-        <member name="T:DemoInfo.Split">
-            <summary>
-            A split. 
-            </summary>
-        </member>
-        <member name="T:DemoInfo.PlayerInfo">
-            <summary>
-            A playerinfo, based on playerinfo_t by Volvo. 
-            </summary>
-        </member>
-        <member name="P:DemoInfo.PlayerInfo.Version">
-            version for future compatibility
-        </member>
-        <member name="T:DemoInfo.BoundingBoxInformation">
-            <summary>
-            This contains information about Collideables (specific edicts), mostly used for bombsites. 
-            </summary>
-        </member>
-        <member name="M:DemoInfo.BoundingBoxInformation.Contains(DemoInfo.Vector)">
-            <summary>
-            Checks wheter a point lies within the BoundingBox. 
-            </summary>
-            <param name="point">The point to check</param>
-        </member>
-        <member name="T:DemoInfo.DemoCommand">
-            <summary>
-            The demo-commands as given by Valve.
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DemoCommand.Signon">
-            <summary>
-            it's a startup message, process as fast as possible
-            </summary>
-        </member>
-        <!-- Badly formed XML comment ignored for member "F:DemoInfo.DemoCommand.Packet" -->
-        <member name="F:DemoInfo.DemoCommand.Synctick">
-            <summary>
-            sync client clock to demo tick
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DemoCommand.ConsoleCommand">
-            <summary>
-            Console Command
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DemoCommand.UserCommand">
-            <summary>
-            user input command
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DemoCommand.DataTables">
-            <summary>
-             network data tables
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DemoCommand.Stop">
-            <summary>
-            end of time.
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DemoCommand.CustomData">
-            <summary>
-            a blob of binary data understood by a callback function
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DemoCommand.LastCommand">
-            <summary>
-            Last Command
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DemoCommand.FirstCommand">
-            <summary>
-            First Command
-            </summary>
-        </member>
-        <member name="F:DemoInfo.RoundEndReason.TargetBombed">
-            <summary>
-            Target Successfully Bombed!
-            </summary>
-        </member>
-        <member name="F:DemoInfo.RoundEndReason.VIPEscaped">
-            <summary>
-            The VIP has escaped.
-            </summary>
-        </member>
-        <member name="F:DemoInfo.RoundEndReason.VIPKilled">
-            <summary>
-            VIP has been assassinated
-            </summary>
-        </member>
-        <member name="F:DemoInfo.RoundEndReason.TerroristsEscaped">
-            <summary>
-            The terrorists have escaped
-            </summary>
-        </member>
-        <member name="F:DemoInfo.RoundEndReason.CTStoppedEscape">
-            <summary>
-            The CTs have prevented most of the terrorists from escaping!
-            </summary>
-        </member>
-        <member name="F:DemoInfo.RoundEndReason.TerroristsStopped">
-            <summary>
-            Escaping terrorists have all been neutralized
-            </summary>
-        </member>
-        <member name="F:DemoInfo.RoundEndReason.BombDefused">
-            <summary>
-            The bomb has been defused!
-            </summary>
-        </member>
-        <member name="F:DemoInfo.RoundEndReason.CTWin">
-            <summary>
-            Counter-Terrorists Win!
-            </summary>
-        </member>
-        <member name="F:DemoInfo.RoundEndReason.TerroristWin">
-            <summary>
-            Terrorists Win! 
-            </summary>
-        </member>
-        <member name="F:DemoInfo.RoundEndReason.Draw">
-            <summary>
-            Round Draw!
-            </summary>
-        </member>
-        <member name="F:DemoInfo.RoundEndReason.HostagesRescued">
-            <summary>
-            All Hostages have been rescued
-            </summary>
-        </member>
-        <member name="F:DemoInfo.RoundEndReason.TargetSaved">
-            <summary>
-            Target has been saved! 
-            </summary>
-        </member>
-        <member name="F:DemoInfo.RoundEndReason.HostagesNotRescued">
-            <summary>
-            Hostages have not been rescued!
-            </summary>
-        </member>
-        <member name="F:DemoInfo.RoundEndReason.TerroristsNotEscaped">
-            <summary>
-            Terrorists have not escaped!
-            </summary>
-        </member>
-        <member name="F:DemoInfo.RoundEndReason.VIPNotEscaped">
-            <summary>
-            VIP has not escaped! 
-            </summary>
-        </member>
-        <member name="F:DemoInfo.RoundEndReason.GameStart">
-            <summary>
-            Game Commencing! 
-            </summary>
-        </member>
-        <member name="F:DemoInfo.RoundEndReason.TerroristsSurrender">
-            <summary>
-            Terrorists Surrender
-            </summary>
-        </member>
-        <member name="F:DemoInfo.RoundEndReason.CTSurrender">
-            <summary>
-            CTs Surrender
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.Unsigned">
-            <summary>
-            Unsigned integer data.
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.Coord">
-            <summary>
-            If this is set, the float/vector is treated like a world coordinate. 
-            Note that the bit count is ignored in this case.
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.NoScale">
-            <summary>
-            For floating point, don't scale into range, just take value as is
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.RoundDown">
-            <summary>
-            For floating point, limit high value to range minus one bit unit
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.RoundUp">
-            <summary>
-             For floating point, limit low value to range minus one bit unit
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.Normal">
-            <summary>
-             If this is set, the vector is treated like a normal (only valid for vectors)
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.Exclude">
-            <summary>
-             This is an exclude prop (not excludED, but it points at another prop to be excluded).
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.XYZE">
-            <summary>
-             Use XYZ/Exponent encoding for vectors.
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.InsideArray">
-            <summary>
-             This tells us that the property is inside an array, so it shouldn't be put into the
-             flattened property list. Its array will point at it when it needs to.
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.ProxyAlwaysYes">
-            <summary>
-             Set for datatable props using one of the default datatable proxies like
-             SendProxy_DataTableToDataTable that always send the data to all clients.
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.IsVectorElement">
-            <summary>
-             Set automatically if SPROP_VECTORELEM is used.
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.Collapsible">
-            <summary>
-             Set automatically if it's a datatable with an offset of 0 that doesn't change the pointer
-             (ie: for all automatically-chained base classes).
-             In this case, it can get rid of this SendPropDataTable altogether and spare the
-             trouble of walking the hierarchy more than necessary.
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.CoordMp">
-            <summary>
-             Like SPROP_COORD, but special handling for multiplayer games
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.CoordMpLowPrecision">
-            <summary>
-            Like SPROP_COORD, but special handling for multiplayer games where the fractional component only gets a 3 bits instead of 5
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.CoordMpIntegral">
-            <summary>
-            SPROP_COORD_MP, but coordinates are rounded to integral boundaries
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.CellCoord">
-            <summary>
-            Like SPROP_COORD, but special encoding for cell coordinates that can't be negative, bit count indicate maximum value
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.CellCoordLowPrecision">
-            <summary>
-            Like SPROP_CELL_COORD, but special handling where the fractional component only gets a 3 bits instead of 5
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.CellCoordIntegral">
-            <summary>
-            SPROP_CELL_COORD, but coordinates are rounded to integral boundaries
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.ChangesOften">
-            <summary>
-             this is an often changed field, moved to head of sendtable so it gets a small index
-            </summary>
-        </member>
-        <member name="F:DemoInfo.DT.SendPropertyFlags.VarInt">
-            <summary>
-            use var int encoded (google protobuf style), note you want to include SPROP_UNSIGNED if needed, its more efficient
-            </summary>
-        </member>
-        <member name="T:DemoInfo.DP.FastNetmessages.RankUpdate">
-            <summary>
-            FastNetMessage adaptation of CCSUsrMsg_ServerRankUpdate.RankUpdate protobuf message
+            Don't what is it?
             </summary>
         </member>
     </members>

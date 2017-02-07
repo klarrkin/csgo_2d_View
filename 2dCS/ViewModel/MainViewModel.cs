@@ -12,6 +12,9 @@ using System.ComponentModel;
 using _2dCS.Objects.Canvas;
 using System.Windows.Media;
 using System.Collections.Generic;
+using _2dCS.ViewModel.Objects.Map;
+using System.Threading;
+using _2dCS.Helpers.MicroTimer;
 
 namespace _2dCS.ViewModel
 {
@@ -29,6 +32,8 @@ namespace _2dCS.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
+		 private static int PLAYER_RADIUS = 5;
+
 		 private static Brush COL_T = new SolidColorBrush(Colors.Red);
 		 private static Brush COL_CT = new SolidColorBrush(Colors.Blue);
 		 private static Brush COL_DEAD = new SolidColorBrush(Colors.Gray);
@@ -41,15 +46,15 @@ namespace _2dCS.ViewModel
 		 private static string DOUBLE_SPEED = "2x";
 		 private static string QUAD_SPEED = "4x";
 		 private static string OCTA_SPEED = "8x";
-		 private static string SECHSTIME_SPEED = "16x";
+		 private static string HEX_SPEED = "16x";
 		 
-		 private enum Speed {NORMAL=1, DOUBLE=2,QUAD=4,OCTA=8,SECHSTIME=16};
+		 private enum Speed {NORMAL=1, DOUBLE=2,QUAD=4,OCTA=8,HEX=16};
 		 
 
 		 public double SizeX { get; set; }
 		 public double SizeY { get; set; }
 
-		 public DispatcherTimer Timer { get; set; }
+		 public MicroTimer Timer { get; set; }
 		 public ICommand Open { get; set; }
 		 public ICommand Start { get; set; }
 		 public ICommand Stop { get; set; }
@@ -70,8 +75,18 @@ namespace _2dCS.ViewModel
 				 }
 			 }
 		 }
-
-
+		 
+		 private Bomb _Bomb;
+		 public Bomb Bomb {
+			 get { return _Bomb; }
+			 set {
+				 if (_Bomb != value) {
+					 this._Bomb = value;
+					 this.RaisePropertyChanged("Bomb");
+				 }
+			 }
+		 }
+    
 		 private List<StatusPlayer> _CTPlayer;
 		 public List<StatusPlayer> CTPlayer {
 			 get { return _CTPlayer; }
@@ -95,13 +110,13 @@ namespace _2dCS.ViewModel
 			 }
 		 }
 
-		 private List<_2dCS.Objects.Canvas.CanvasPlayer> _CanvasPlayer;
-		 public List<_2dCS.Objects.Canvas.CanvasPlayer> CanvasPlayer {
-			 get { return _CanvasPlayer; }
+		 private ObservableCollection<CSVisible> _MapItems;
+		 public ObservableCollection<CSVisible> MapItems {
+			 get { return _MapItems; }
 			 set {
-				 if (_CanvasPlayer != value) {
-					 this._CanvasPlayer = value;
-					 this.RaisePropertyChanged("CanvasPlayer");
+				 if (_MapItems != value) {
+					 this._MapItems = value;
+					 this.RaisePropertyChanged("MapItems");
 				 }
 			 }
 		 }
@@ -243,52 +258,54 @@ namespace _2dCS.ViewModel
 			 DateTime beginn = DateTime.Now;
 			 this.Parser.ParseNextTick();
 			 DateTime end = DateTime.Now;
-
-			 double parseDuration = (end - beginn).TotalMilliseconds;
-			 double delayMs = (OriginTickSpeedMs - parseDuration) / this.FFSpeeder;
-			 if (delayMs <= 0) {
-				 delayMs = 1;
-			 }
-			 //this.Debug = "" + parseDuration + "ms";
-			 if (this.Timer != null) {
-				 this.Timer.Interval = TimeSpan.FromMilliseconds(delayMs);
-			 }
+	
 			 this.Time = TimeSpan.FromMilliseconds(this.Parser.CurrentTime * 1000);
 		 }
-		  
+
 
 		 private void StartCmd_Executed() {
-			 this.Timer = new DispatcherTimer();
-			 this.Timer.Interval = TimeSpan.FromMilliseconds(100);
-			 this.Timer.Tick += RunTick;
+			 if (this.Timer == null) {
+				  this.Timer = new MicroTimer();
+				  this.Timer.MicroTimerElapsed +=
+					 new _2dCS.Helpers.MicroTimer.MicroTimer.MicroTimerElapsedEventHandler(RunTick);
+				  this.Timer.Interval = (int)((this.OriginTickSpeedMs / FFSpeeder)*1000);
+			 }
 			 this.Timer.Start();
 			 this.Running = true;
-			 this.InitPlayers();
 		 }
 
 		private void StopCmd_Executed() {
-			 this.Timer.Stop();
-			 this.Timer = null;
+			if (this.Timer != null) {
+				this.Timer.Stop();
+			}
 			 this.Running = false;
 			
 		 }
 
+		private void SetSpeed(string buttonName, Speed speed) {
+			this.SpeedText = buttonName;
+			 this.FFSpeeder = (int)speed;
+			 if (this.Timer != null) {
+				 this.Timer.Interval = (int)((this.OriginTickSpeedMs / FFSpeeder)*1000);
+			 }
+		}
+
 		 private void FasterCmd_Executed() {
 			 if (this.SpeedText == NORMAL_SPEED) {
-				 this.SpeedText = DOUBLE_SPEED;
-				 this.FFSpeeder = (int)Speed.DOUBLE;
+				 this.SetSpeed(DOUBLE_SPEED, Speed.DOUBLE);
+
 			 } else if (this.SpeedText == DOUBLE_SPEED) {
-				 this.SpeedText = QUAD_SPEED;
-				 this.FFSpeeder = (int)Speed.QUAD;
+				 this.SetSpeed(QUAD_SPEED, Speed.QUAD);
+
 			 } else if (this.SpeedText == QUAD_SPEED) {
-				 this.SpeedText = OCTA_SPEED;
-				 this.FFSpeeder = (int)Speed.OCTA;
+				 this.SetSpeed(OCTA_SPEED, Speed.OCTA);
+
 			 } else if (this.SpeedText == OCTA_SPEED) {
-				 this.SpeedText = SECHSTIME_SPEED;
-				 this.FFSpeeder = (int)Speed.SECHSTIME;
-			 } else if (this.SpeedText == SECHSTIME_SPEED) {
-				 this.SpeedText = NORMAL_SPEED;
-				 this.FFSpeeder = (int)Speed.NORMAL;
+				 this.SetSpeed(HEX_SPEED, Speed.HEX);
+
+			 } else if (this.SpeedText == HEX_SPEED) {
+				 this.SetSpeed(NORMAL_SPEED, Speed.NORMAL);
+
 			 }
 		 }
 
@@ -319,6 +336,36 @@ namespace _2dCS.ViewModel
 			  }
 		  }
 
+		  private Dictionary<string, Smoke> smokes;
+		  private void SmokeStarted(object o, SmokeEventArgs e) {
+			  Application.Current.Dispatcher.Invoke(new Action (() => {
+			  Smoke smoke = new Smoke();
+			  smoke.XPosition = this.ConvertPosition(true, e.Position.X);
+			  smoke.YPosition = this.ConvertPosition(false, e.Position.Y);
+			  smoke.Visibility = Visibility.Visible;
+			  string pos = "" + e.Position.X + "-" + e.Position.Y;
+			  smokes.Add(pos, smoke);
+			  this.MapItems.Add(smoke);
+			  }));
+			  
+		  }
+		  private void SmokeEnded(object o, SmokeEventArgs e) {
+			  Application.Current.Dispatcher.Invoke(new Action (() => {
+			  string pos = ""+e.Position.X + "-"+e.Position.Y;
+			  if (smokes.ContainsKey(pos)) {
+				  smokes[pos].Visibility = Visibility.Collapsed;
+			  }
+				  }));
+		  }
+
+		  private void WeaponFired(object o, WeaponFiredEventArgs e) {
+			  Application.Current.Dispatcher.Invoke(new Action (() => {
+			  if (this.PlCanDict.ContainsKey(e.Shooter.SteamID)){
+				  this.PlCanDict[e.Shooter.SteamID].Shoot();
+			  }
+				  }));
+		  }
+
 		  private void InitialParser(string filePath) {
 			  this.Events = new ObservableCollection<CSEvent>();
 
@@ -327,17 +374,22 @@ namespace _2dCS.ViewModel
 				this.Parser.TickDone += new EventHandler<TickDoneEventArgs>(parser_TickDone);
 				this.Parser.MatchStarted += new EventHandler<MatchStartedEventArgs>(parser_MatchStarted);
 				this.Parser.PlayerKilled += new EventHandler<PlayerKilledEventArgs>(HandlePlayerKilled);
-				this.Parser.WeaponFired += new EventHandler<WeaponFiredEventArgs>(HandleWeaponFired);
 				this.Parser.RoundStart += new EventHandler<RoundStartedEventArgs>(HandleRoundStarted);
 				this.Parser.MatchStarted += new EventHandler<MatchStartedEventArgs>(HandleMatchStarted);
 				this.Parser.PlayerHurt += new EventHandler<PlayerHurtEventArgs>(HandlePlayerHurt);
 				this.Parser.PlayerTeam += new EventHandler<PlayerTeamEventArgs>(HandleTeamjoin);
+				this.Parser.BombPlanted += new EventHandler<BombEventArgs>(BombPlanted);
+				this.Parser.SmokeNadeStarted += new EventHandler<SmokeEventArgs>(SmokeStarted);
+				this.Parser.SmokeNadeEnded += new EventHandler<SmokeEventArgs>(SmokeEnded);
+			  this.Parser.WeaponFired += new EventHandler<WeaponFiredEventArgs>(WeaponFired);
+
 				this.Parser.ParseHeader();
 
 				this.HasStarted = false;
 				this.Map = new CSMap(this.Parser.Map);
 				this.Time = new TimeSpan();
 
+				this.smokes = new Dictionary<string, Smoke>();
 				this.calculatedTicks = 0;
 				this.firstPlayerFound = false;
 				this.TickModulo = (int)Math.Round(this.Parser.TickRate / 32);
@@ -351,25 +403,69 @@ namespace _2dCS.ViewModel
 				ev.Time = this.Time;
 				this.Events.Insert(0, ev);
 		  }
+		  private DispatcherTimer bombTimer = null;
+
+		  private double ConvertPosition(bool horizontal, double value) {
+			  if (horizontal) {
+				  return -this.SizeX * (value - this.Map.XOffset) / this.Map.XSize;
+			  } else {
+				  return this.SizeY * (value + this.Map.YOffset) / this.Map.YSize;
+			  }
+		  }
+
+		  private void BombPlanted(object sender, BombEventArgs e) {
+			  Application.Current.Dispatcher.Invoke(new Action (() => {
+			  this.Bomb = new Bomb();
+
+			  this.Bomb.XPosition = this.ConvertPosition(true, e.Player.Position.X);
+			  this.Bomb.YPosition = this.ConvertPosition(false, e.Player.Position.Y);
+			  this.Bomb.Visibility = Visibility.Visible;
+			  this.MapItems.Add(this.Bomb);
+
+			  this.bombTimer = new DispatcherTimer();
+			  bombTimer.Interval = TimeSpan.FromSeconds(1);
+			  bombTimer.Tick += new EventHandler(delegate(Object o, EventArgs a) {
+
+				  if (this.Bomb.RestTime <= 0) {
+					  this.Bomb.Visibility = Visibility.Collapsed;
+					  this.bombTimer.Stop();
+				  } else {
+					  this.Bomb.RestTime--;
+				  }
+			  });
+			  this.bombTimer.Start();
+
+			  CSEvent ev = new CSEvent();
+			  ev.Bez = String.Format("{0} legt die Bombe auf {1}", e.Player.Name, e.Site);
+			  ev.Time = this.Time;
+			  this.Events.Insert(0, ev);
+				  }));
+		  }
+
 		  private void HandlePlayerHurt(object sender, PlayerHurtEventArgs e) {
+			  Application.Current.Dispatcher.Invoke(new Action (() => {
 			  if (e.HealthDamage >= 50 && e.Player.IsAlive) {
 				  CSEvent ev = new CSEvent();
 				  ev.Bez = String.Format("{0} trifft {1} am {2} für {3} HP", (e.Attacker!= null)?e.Attacker.Name:"unbekannt", e.Player.Name, e.Hitgroup, e.HealthDamage);
 				  ev.Time = this.Time;
 				  this.Events.Insert(0, ev);
 			  }
+				  }));
 		  }
 
 		  private void HandleTeamjoin(object sender, PlayerTeamEventArgs e) {
+			  Application.Current.Dispatcher.Invoke(new Action (() => {
 			  this.InitPlayers();
 			  this.HasStarted = true;
 			  CSEvent ev = new CSEvent();
 			  ev.Bez = String.Format("{0} ist team {1} beigetreten.", "unbekannt", e.NewTeam+"");
 			  ev.Time = this.Time;
 			  this.Events.Insert(0, ev);
+				  }));
 		  }
 
 		  private void HandleMatchStarted(object sender, MatchStartedEventArgs e) {
+			  Application.Current.Dispatcher.Invoke(new Action (() => {
 			  this.HasStarted = true;
 			  CSEvent ev = new CSEvent();
 			  ev.Bez = "Match gestartet.";
@@ -377,9 +473,11 @@ namespace _2dCS.ViewModel
 			  this.Events.Insert(0, ev);
 			  //this.InitPlayers();
 			  this.UpdateStatus();
+				  }));
 		  }
 
 		  private void HandleRoundStarted(object sender,RoundStartedEventArgs e) {
+			  Application.Current.Dispatcher.Invoke(new Action (() => {
 			  CSEvent ev = new CSEvent();
 			  ev.Bez = "Runde gestartet.";
 			  ev.Time = this.Time;
@@ -387,24 +485,28 @@ namespace _2dCS.ViewModel
 
 			  this.InitPlayers();
 			  this.UpdateStatus();
+				  }));
 		  }
 
 		  private bool firstPlayerFound = false;
 		  private long calculatedTicks = 0;
 		  private void parser_TickDone(object sender, TickDoneEventArgs e) {
-			  if (firstPlayerFound) {
-				  if (this.Parser.CurrentTick % this.TickModulo == 0) {
-					  
-					  if (calculatedTicks % 3 == 0) {
-						  this.UpdateAllPlayerData();
-					  } else {
-						  this.UpdatePlayerPosition();
+			  Application.Current.Dispatcher.Invoke(new Action (() => {
+				  if (firstPlayerFound) {
+					  if (this.Parser.CurrentTick % this.TickModulo == 0) {
+
+						  if (calculatedTicks % 3 == 0) {
+							  this.UpdateAllPlayerData();
+						  } else {
+							  this.UpdatePlayerPosition();
+						  }
+
+						  calculatedTicks++;
 					  }
-					  calculatedTicks++;
+				  } else {
+					  this.InitPlayers();
 				  }
-			  } else {
-				  this.InitPlayers();
-			  }
+			  }));
 		  }
 
 		  private void UpdateStatus() {
@@ -414,20 +516,15 @@ namespace _2dCS.ViewModel
 			  this.NameCT = this.Parser.CTClanName;
 			  this.NameT = this.Parser.TClanName;
 		  }
-		  //float biggerVectorComp = ((player.ViewDirectionX>player.ViewDirectionY)?player.ViewDirectionX:player.ViewDirectionY)/20;
-		  //cvPlayer.ViewX = player.ViewDirectionX / biggerVectorComp;
-		  //cvPlayer.ViewY = player.ViewDirectionY / biggerVectorComp;
-		  //cvPlayer.Radius = 10;//(int) (this.SizeY * (Map.PlayerSize / this.Map.XSize));
-
+		 
 		  private void InitPlayers() {
-			  List<CanvasPlayer> canvPl = new List<CanvasPlayer>();
+			  ObservableCollection<CSVisible> canvPl = new ObservableCollection<CSVisible>();
 			  List<StatusPlayer> terPl = new List<StatusPlayer>();
 			  List<StatusPlayer> ctPl = new List<StatusPlayer>();
 
 			  this.PlCanDict = new Dictionary<long, CanvasPlayer>();
 			  this.PlCTDict = new Dictionary<long, StatusPlayer>();
 			  this.PlTDict = new Dictionary<long, StatusPlayer>();
-
 
 			  int i = 0;
 			  foreach (var player in this.Parser.PlayingParticipants) {
@@ -436,9 +533,9 @@ namespace _2dCS.ViewModel
 
 					  CanvasPlayer cvPlayer = new CanvasPlayer();
 					  cvPlayer.Bez = "" + i;
-					  cvPlayer.Radius = 10;
-					  cvPlayer.XPosition = -this.SizeX * (player.Position.X - this.Map.XOffset) / this.Map.XSize;
-					  cvPlayer.YPosition = this.SizeY * (player.Position.Y + this.Map.YOffset) / this.Map.YSize;
+					  cvPlayer.Radius = PLAYER_RADIUS;
+					  cvPlayer.XPosition = this.ConvertPosition(true, player.Position.X);
+					  cvPlayer.YPosition = this.ConvertPosition(false, player.Position.X);
 					  cvPlayer.Health = player.HP;
 
 					  cvPlayer.PlayerDao = player;
@@ -461,6 +558,7 @@ namespace _2dCS.ViewModel
 						  if (player.IsAlive) {
 							  cvPlayer.Color = COL_T;
 							  stPl.Color = COL_T;
+							  
 						  }
 					  }
 					  if (player.Team == Team.CounterTerrorist) {
@@ -470,6 +568,7 @@ namespace _2dCS.ViewModel
 						  if (player.IsAlive) {
 							  cvPlayer.Color = COL_CT;
 							  stPl.Color = COL_CT;
+							  
 						  }
 
 					  }
@@ -480,10 +579,9 @@ namespace _2dCS.ViewModel
 					  i++;
 				  }
 			  }
-			  this.CanvasPlayer = canvPl;
+			  this.MapItems = canvPl;
 			  this.TerrorPlayer = terPl;
 			  this.CTPlayer = ctPl;
-
 		  }
 
 
@@ -492,8 +590,12 @@ namespace _2dCS.ViewModel
 				  if (this.PlCanDict.ContainsKey(player.SteamID)) {
 					  CanvasPlayer cvPlayer = this.PlCanDict[player.SteamID];
 
-					  cvPlayer.XPosition = -this.SizeX * (player.Position.X - this.Map.XOffset) / this.Map.XSize;
-					  cvPlayer.YPosition = this.SizeY * (player.Position.Y + this.Map.YOffset) / this.Map.YSize;
+					  cvPlayer.XPosition = this.ConvertPosition(true, player.Position.X);
+					  cvPlayer.YPosition = this.ConvertPosition(false, player.Position.Y);
+					  
+				/*	  cvPlayer.ViewX = this.ConvertPosition(true, player.Position.X-player.ViewDirectionX);
+					  cvPlayer.ViewY = this.ConvertPosition(false, player.Position.Y-player.ViewDirectionY);
+					*/  
 				  }
 			  }
 		  }
@@ -502,8 +604,8 @@ namespace _2dCS.ViewModel
 				  if (this.PlCanDict.ContainsKey(player.SteamID)) {
 					  CanvasPlayer cvPlayer = this.PlCanDict[player.SteamID];
 
-					  cvPlayer.XPosition = -this.SizeX * (player.Position.X - this.Map.XOffset) / this.Map.XSize;
-					  cvPlayer.YPosition = this.SizeY * (player.Position.Y + this.Map.YOffset) / this.Map.YSize;
+					  cvPlayer.XPosition = this.ConvertPosition(true, player.Position.X);
+					  cvPlayer.YPosition = this.ConvertPosition(false, player.Position.Y);
 					  cvPlayer.Health = player.HP;
 
 					  StatusPlayer stPl;
@@ -555,19 +657,22 @@ namespace _2dCS.ViewModel
 		  }
 
 		  private void parser_MatchStarted(object sender, MatchStartedEventArgs e) {
+			  Application.Current.Dispatcher.Invoke(new Action (() => {
 			  CSEvent ev = new CSEvent();
 			  ev.Bez = "Demo gestartet.";
 			  ev.Time = this.Time;
 			  this.Events.Insert(0, ev);
+				  }));
 		  }
 
 		  private void HandlePlayerKilled(object sender, PlayerKilledEventArgs e) {
+			  Application.Current.Dispatcher.Invoke(new Action (() => {
 			  CSEvent ev = new CSEvent();
 			  ev.Bez = String.Format("{0} tötet {1} mit {2}", e.Killer.Name, e.Victim.Name, e.Weapon.Weapon);
 			  ev.Time = this.Time;
 			  this.Events.Insert(0,ev);
+				  }));
 		  }
-		  private void HandleWeaponFired(object sender, WeaponFiredEventArgs e) {
-		  }
+		  
     }
 }

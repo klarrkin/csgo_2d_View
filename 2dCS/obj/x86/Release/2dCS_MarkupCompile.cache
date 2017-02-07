@@ -10,11 +10,11 @@ none
 false
 TRACE
 C:\development\Quellcode\Testimons\2dCS\2dCS\App.xaml
-51842366638
+8-1013941355
 
-231457040817
-171250033536
-MainWindow.xaml;MapView.xaml;PlayerStatus.xaml;PlayerStatusIcon.xaml;TextView.xaml;
+32-385465496
+17-805285624
+MainWindow.xaml;Views\MapView.xaml;Views\Map\SmokeView.xaml;Views\PlayerStatus.xaml;Views\PlayerStatusIcon.xaml;Views\TextView.xaml;Views\Map\BombView.xaml;Views\Map\PlayerView.xaml;
 
 False
 

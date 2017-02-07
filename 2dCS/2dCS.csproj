@@ -77,23 +77,38 @@
     <Compile Include="Converter\MathConverter.cs" />
     <Compile Include="Converter\StringToImageConverter.cs" />
     <Compile Include="Helpers\KnownFolders.cs" />
-    <Compile Include="MapView.xaml.cs">
+    <Compile Include="Helpers\MicroTimer\MicroStopwatch.cs" />
+    <Compile Include="Helpers\MicroTimer\MicroTimer.cs" />
+    <Compile Include="Helpers\MicroTimer\MicroTimerEventArgs.cs" />
+    <Compile Include="ViewModel\Objects\Map\Smoke.cs" />
+    <Compile Include="Views\MapView.xaml.cs">
       <DependentUpon>MapView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Objects\Canvas\CanvasPlayer.cs" />
-    <Compile Include="Objects\Canvas\StatusPlayer.cs" />
-    <Compile Include="Objects\Canvas\WeaponType.cs" />
-    <Compile Include="Objects\CSEvent.cs" />
-    <Compile Include="Objects\CSItems.cs" />
-    <Compile Include="Objects\CSMap.cs" />
-    <Compile Include="PlayerStatus.xaml.cs">
+    <Compile Include="ViewModel\Objects\Map\Bomb.cs" />
+    <Compile Include="ViewModel\Objects\Map\CanvasPlayer.cs" />
+    <Compile Include="ViewModel\Objects\Map\CSVisible.cs" />
+    <Compile Include="ViewModel\Objects\SideBar\StatusPlayer.cs" />
+    <Compile Include="ViewModel\Objects\Map\WeaponType.cs" />
+    <Compile Include="ViewModel\Objects\CSEvent.cs" />
+    <Compile Include="ViewModel\Objects\CSItems.cs" />
+    <Compile Include="ViewModel\Objects\CSMap.cs" />
+    <Compile Include="Views\Map\SmokeView.xaml.cs">
+      <DependentUpon>SmokeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PlayerStatus.xaml.cs">
       <DependentUpon>PlayerStatus.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PlayerStatusIcon.xaml.cs">
+    <Compile Include="Views\PlayerStatusIcon.xaml.cs">
       <DependentUpon>PlayerStatusIcon.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TextView.xaml.cs">
+    <Compile Include="Views\TextView.xaml.cs">
       <DependentUpon>TextView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Map\BombView.xaml.cs">
+      <DependentUpon>BombView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Map\PlayerView.xaml.cs">
+      <DependentUpon>PlayerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
@@ -109,19 +124,31 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="MapView.xaml">
+    <Page Include="Views\MapView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PlayerStatus.xaml">
+    <Page Include="Views\Map\SmokeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PlayerStatusIcon.xaml">
+    <Page Include="Views\PlayerStatus.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TextView.xaml">
+    <Page Include="Views\PlayerStatusIcon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TextView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Map\BombView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Map\PlayerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -157,6 +184,7 @@
       <Name>DemoInfo</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
