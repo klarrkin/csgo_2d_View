@@ -1,0 +1,141 @@
+﻿<Window x:Class="_2dCS.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="CS:GO Tactics Viewer" Height="434" Width="699"
+        xmlns:conv="clr-namespace:_2dCS.Converter"
+   
+    xmlns:local="clr-namespace:_2dCS"
+    DataContext="{Binding Main, Source={StaticResource Locator}}">
+    <Window.Resources>
+        <conv:StringToImageConverter
+            x:Key="StringToImageConverter" />
+        <conv:MathConverter
+            x:Key="MathConverter" />
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition
+                Height="18" />
+            <RowDefinition
+                Height="206*" />
+            <RowDefinition
+                Height="5" />
+            <RowDefinition
+                Height="86" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition
+                Width="385*" />
+            <ColumnDefinition
+                Width="118*" />
+        </Grid.ColumnDefinitions>
+        <Menu
+        
+            HorizontalAlignment="Stretch"
+            Name="menu1"
+            VerticalAlignment="Stretch"
+           
+            Grid.ColumnSpan="2">
+            <MenuItem
+                Header="_File">
+                <MenuItem
+                    Command="{Binding Open}"
+                Header="_Open" />
+                <MenuItem
+                    Header="_Exit" />
+
+            </MenuItem>
+
+        </Menu>
+        <GroupBox
+            Grid.Column="1"
+            Grid.Row="1"
+            Header="Status"
+            HorizontalAlignment="Stretch"
+            Name="groupBox1"
+            VerticalAlignment="Stretch"
+            >
+             <local:PlayerStatus />
+        </GroupBox>
+        <GroupBox
+            Grid.Row="3"
+            Header="Text view"
+            HorizontalAlignment="Stretch"
+            Name="groupBox2"
+            VerticalAlignment="Stretch"
+         >
+            <local:TextView />
+        </GroupBox>
+        <GroupBox
+            Grid.Column="1"
+            Grid.Row="3"
+            Header="Controls"
+            HorizontalAlignment="Stretch"
+            Name="groupBox3"
+            VerticalAlignment="Stretch"
+            Grid.RowSpan="2">
+            <Grid>
+                <Button
+                    Content="|>"
+                    Command="{Binding Start}"
+                    Height="23"
+                    HorizontalAlignment="Left"
+                    Margin="6,6,0,0"
+                    Name="button1"
+                    VerticalAlignment="Top"
+                    Width="30" />
+                <Button
+                    Content=">>"
+                    Command="{Binding Faster}"
+                    Height="23"
+                    HorizontalAlignment="Left"
+                    Margin="78,6,0,0"
+                    Name="button2"
+                    VerticalAlignment="Top"
+                    Width="30" />
+                <TextBox
+                    Text="{Binding Time, StringFormat=hh\\:mm\\:ss}"
+                    Height="23"
+                    Margin="9,34,0,0"
+                    Name="textBox1"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    Width="99"/>
+                <Button
+                    Content="||"
+                    Command="{Binding Stop}"
+                    Height="23"
+                    HorizontalAlignment="Left"
+                    Margin="42,6,0,0"
+                    Name="button3"
+                    VerticalAlignment="Top"
+                    Width="30" />
+                <TextBlock
+                    Height="23"
+                    HorizontalAlignment="Left"
+                    Margin="114,10,0,0"
+                    Name="textBlock2"
+                    Text="{Binding SpeedText}"
+                    VerticalAlignment="Top" />
+            </Grid>
+        </GroupBox>
+        <GroupBox
+            Grid.Row="1"
+            Header="Map View"
+            
+            HorizontalAlignment="Stretch"
+            Name="groupBox4"
+            VerticalAlignment="Stretch"
+            >
+            <local:MapView/>
+        </GroupBox>
+       
+        <GridSplitter
+            Grid.Row="2"
+            Grid.ColumnSpan="2"
+            HorizontalAlignment="Stretch"
+            Name="gridSplitter1"
+            VerticalAlignment="Stretch"
+/>
+    </Grid>
+</Window>

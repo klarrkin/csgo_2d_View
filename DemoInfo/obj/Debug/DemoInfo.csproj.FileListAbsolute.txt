@@ -1,0 +1,5 @@
+C:\development\APIs\demoinfo-master\DemoInfo\bin\Debug\DemoInfo.dll.config
+C:\development\APIs\demoinfo-master\DemoInfo\bin\Debug\DemoInfo.dll
+C:\development\APIs\demoinfo-master\DemoInfo\bin\Debug\DemoInfo.pdb
+C:\development\APIs\demoinfo-master\DemoInfo\obj\Debug\DemoInfo.dll
+C:\development\APIs\demoinfo-master\DemoInfo\obj\Debug\DemoInfo.pdb

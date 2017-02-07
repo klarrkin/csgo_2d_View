@@ -1,0 +1,12 @@
+C:\development\APIs\demoinfo-master\DemoInfo\bin\Release\DemoInfo.dll.config
+C:\development\APIs\demoinfo-master\DemoInfo\bin\Release\DemoInfo.xml
+C:\development\APIs\demoinfo-master\DemoInfo\bin\Release\DemoInfo.dll
+C:\development\APIs\demoinfo-master\DemoInfo\bin\Release\DemoInfo.pdb
+C:\development\APIs\demoinfo-master\DemoInfo\obj\Release\DemoInfo.dll
+C:\development\APIs\demoinfo-master\DemoInfo\obj\Release\DemoInfo.pdb
+C:\development\Quellcode\Testimons\2dCS\DemoInfo\bin\Release\DemoInfo.dll.config
+C:\development\Quellcode\Testimons\2dCS\DemoInfo\bin\Release\DemoInfo.xml
+C:\development\Quellcode\Testimons\2dCS\DemoInfo\bin\Release\DemoInfo.dll
+C:\development\Quellcode\Testimons\2dCS\DemoInfo\bin\Release\DemoInfo.pdb
+C:\development\Quellcode\Testimons\2dCS\DemoInfo\obj\Release\DemoInfo.dll
+C:\development\Quellcode\Testimons\2dCS\DemoInfo\obj\Release\DemoInfo.pdb

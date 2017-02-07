@@ -1,0 +1,83 @@
+﻿<UserControl x:Class="_2dCS.MapView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:behav="clr-namespace:_2dCS.Behavior"
+    xmlns:conv="clr-namespace:_2dCS.Converter"
+    mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <conv:StringToImageConverter
+            x:Key="StringToImageConverter" />
+        <conv:MathConverter
+            x:Key="MathConverter" />
+    </UserControl.Resources>
+    <ScrollViewer
+        HorizontalScrollBarVisibility="Auto"
+        VerticalAlignment="Stretch"
+        HorizontalAlignment="Stretch">
+        <ItemsControl
+            ItemsSource="{Binding Path=CanvasPlayer}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas
+                        Name="canvasBackground"
+                        Canvas.ZIndex="-1"
+                        behav:SizeObserver.Observe="True"
+                        behav:SizeObserver.ObservedWidth="{Binding SizeX, Mode=OneWayToSource}"
+                        behav:SizeObserver.ObservedHeight="{Binding SizeY, Mode=OneWayToSource}"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch">
+                        <Canvas.Background>
+                            <ImageBrush
+                                ImageSource="{Binding Path=Map.PathPicture, Converter={StaticResource StringToImageConverter}}" />
+                        </Canvas.Background>
+                    </Canvas>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemContainerStyle>
+                <Style
+                    TargetType="ContentPresenter">
+                    <Setter
+                        Property="Canvas.Left"
+                        Value="{Binding XPosition}" />
+                    <Setter
+                        Property="Canvas.Top"
+                        Value="{Binding YPosition}" />
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Canvas
+                        Visibility="{Binding Visibility}">
+                        <!-- <Line
+                                    X1="{Binding Radius, Converter={StaticResource MathConverter}, ConverterParameter=@VALUE/2}"
+                                    Y1="{Binding Radius, Converter={StaticResource MathConverter}, ConverterParameter=@VALUE/2}"
+                                    X2="{Binding ViewX}"
+                                    Y2="{Binding ViewY}"
+                                    Stroke="White"
+                                    Canvas.ZIndex="4"
+                                    StrokeThickness="1" />-->
+                       <!-- <Path
+                            Fill="{Binding Color}"
+                            Data="{Binding EllipseFormel}"
+                            Canvas.ZIndex="5" />-->
+                        <Ellipse
+                            Fill="{Binding Color}"
+                            Width="{Binding Radius, Converter={StaticResource MathConverter}, ConverterParameter=@VALUE-0}"
+                            Height="{Binding Radius, Converter={StaticResource MathConverter}, ConverterParameter=@VALUE-0}"
+                            Canvas.ZIndex="4" />
+                        <TextBlock
+                            Canvas.Left="{Binding Radius, Converter={StaticResource MathConverter}, ConverterParameter=@VALUE/2.0}"
+                            Canvas.Top="{Binding Radius, Converter={StaticResource MathConverter}, ConverterParameter=@VALUE/5.0}"
+                            Foreground="White"
+                            FontSize="8"
+                            Text="{Binding Bez}"
+                            Canvas.ZIndex="6" />
+                    </Canvas>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
+</UserControl>
